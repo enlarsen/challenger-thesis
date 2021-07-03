@@ -1,0 +1,658 @@
+% University of Washington Thesis style
+% by Jim Fox, 1990,1991
+ 
+\typeout{[UW Thesis style. Version 2.3]}
+%
+% 5/4/92
+% version 2.3: - fix \textof... to uppercase in chapter* headings
+%
+% 9/9/91
+% version 2.2: - allow customization of `fixed' text \textof...
+%              - set toc pageno to `i' in all cases 
+%
+% 5/29/91
+% version 2.1: - add special captions. (continued), 1.1a, 1.1b, ...
+%
+% 5/2/91
+% version 2.0: - add twoside style, now allowed by grad school
+%                invoked by [twoside] option
+%                Note difficulty with doublepage floats
+%
+% version 1.6: - add ':' after the chapter number in the toc
+%              - increase above field width to 85pt
+%
+% version 1.5: - negative page numbering for prelim section
+%                to help dvi->printer programs order the output pages.
+%              - default year
+%
+% version 1.4: - (re)fixes that persistent bug in the facing-page captions.
+%
+% version 1.3: - fixes a bug in the facing-page captions.
+%              - allows footnotes style to be default
+%              - cleans up 12pt default
+%              - cleans up page bottom margins
+%              - adds title page options
+%
+ 
+%   This thesis style is essentually a 12-point book style with
+%   four modifications and the addition of preliminary page macros.
+%
+%   1)  Parameter settings:  Page size, position, and numbering.
+%
+%   2)  Chapter and sections:  Alteration of type size and positioning
+%       of titles; allowance for very long text; allowance for
+%       user specified line breaks in chapter titles.
+%
+%   3)  Footnotes:  Provision for bottom-of-page notes (LaTeX default),
+%       end-of-chapter notes, or end-of-thesis notes; alteration
+%       of bottom-of-page footnote style.
+%
+%   4)  Facing caption pages:  Captions for full page figures or tables,
+%       where the page margins and numbering are reversed.
+%       ** applies to oneside style only **
+ 
+ 
+%
+% ----  Footnotes  --------------------------------------------
+%
+% Footnote placement option
+% (this must come before option processing (i.e. book))
+%
+%   [endnotes] put the references at the thesis end
+%   [chapternotes] put the references at the chapter end
+%   [footnotes] put the references at the page bottom
+%
+\let\n@teitem\relax
+\def\@chapternotetext{\bgroup
+  \let\input\relax \catcode`\^^M=12\newlinechar=`\^^M\d@chapternote}
+\long\def\d@chapternote#1{%
+    \immediate \write\tf@not{\n@teitem#1\relax}%
+                       \egroup}
+\newif\ifendnotes      % true if doing endnotes
+  \endnotesfalse
+\newif\ifchapternotes  % true if doing chapternotes
+  \chapternotesfalse
+\newwrite\tf@not       % file for chapter or thesis notes
+\def\ds@footnotes{     % selects bottom-of-page notes (default)
+  \endnotesfalse \chapternotesfalse
+  \let\chapternotes\relax \let\endnotes\relax}
+\def\ds@chapternotes{  % selects end-of-chapter notes
+  \let\@footnotetext\@chapternotetext
+  \endnotesfalse \chapternotestrue
+  \let\endnotes\relax}
+\def\ds@endnotes{      % selects end-of-thesis notes
+  \let\@footnotetext\@chapternotetext
+  \endnotestrue \chapternotesfalse
+  \let\chapternotes\relax
+  \@startnotes}
+ 
+ 
+%   Chapter and End notes
+%
+\def\@startnotes{%  opens the .not file
+  \immediate \openout\tf@not\jobname.not\relax
+  \immediate \write\tf@not{\relax}
+  \setcounter{footnote}{0}}
+%
+%   When text is written to file (.not) the source linebreaks
+%   are maintained.  This keeps the individual lines in the file short.
+%
+\def\textofNotes#1{\gdef\@textofNotes{#1}}  \textofNotes{Notes to Chapter}
+\def\chapternotes{\clearpage   % prints chapter notes (a section)
+  \ifchapternotes\ifnum\c@footnote>1
+    \begin{center} Notes to Chapter \Roman{chapter} \end{center}\par
+    \addcontentsline{toc}{section}{\protect
+        \numberline{}{\protect\@textofNotes\ \Roman{chapter}}}
+    \begin{enumerate}
+    \immediate\closeout\tf@not
+    \catcode`@=11
+    \let\n@teitem\item
+    \@input{\jobname.not}
+    \end{enumerate}
+    \clearpage\fi\fi}
+ 
+\def\endnotes{                 % prints end notes (a chapter)
+  \ifendnotes\ifnum\c@footnote>1
+    \chapter{Notes}
+    \begin{enumerate}
+    \immediate\closeout\tf@not
+    \catcode`@=11
+    \let\n@teitem\item
+    \@input{\jobname.not}
+    \end{enumerate}
+    \clearpage\fi\fi}
+ 
+% ----  [architect] style -----------------
+% This is really untested, incomplete, and not yet recommended
+%
+% sets landscape page sizing.  Two-column mode must be manually
+% entered/exited via \twocolumn and \onecolumn
+%
+\newif\ifarchitect \architectfalse
+\def\ds@architect{\architecttrue}
+%
+ 
+% ----  Thesis is a modified 12-pt book style  ----------------------------
+%
+% Done this awkward way because book.sty defaults to twoside and 10pt
+%
+\def\set@sides{\@twosidefalse}                % the default still
+\def\ds@twoside{\def\set@sides{\@twosidetrue}} % option
+\let\@ld@options\@options
+\def\@options{\def\@ptsize{2}\@ld@options}  % default is 12 point (vers 1.3)
+\input book.sty
+\set@sides  % now we can set the sides option
+\if@twoside \message{[twosides]}\else\message{[oneside]}\fi
+ 
+% increase baselines for normal and footnote sizes
+\def\@normalsize{\@setsize\normalsize{18pt}\xiipt\@xiipt
+ \abovedisplayskip 15pt plus3pt minus7pt\belowdisplayskip \abovedisplayskip
+ \abovedisplayshortskip \z@ plus3pt\belowdisplayshortskip 8pt plus4pt
+ minus3pt\let\@listi\@listI}
+%
+\def\footnotesize{\@setsize\footnotesize{14pt}\xpt\@xpt
+ \abovedisplayskip 12pt plus2pt minus5pt\belowdisplayskip \abovedisplayskip
+ \abovedisplayshortskip \z@ plus3pt\belowdisplayshortskip 7pt plus3pt minus3pt
+ \def\@listi{\leftmargin\leftmargini \topsep 8pt plus 2pt minus 2pt\parsep 4pt
+ plus 2pt minus 1pt
+ \itemsep \parsep}}
+%
+\def\@listI{\leftmargin\leftmargini \parsep 7pt plus 3pt minus 1pt\topsep
+ 12pt plus 5pt minus 6pt\itemsep 7pt plus 3pt minus 1pt}
+ 
+ 
+% margins are approximately 1 inch, except 1.5 inch at the binding
+%
+\textheight 590pt \textwidth 433pt
+\oddsidemargin 36pt \evensidemargin 0pt
+\marginparwidth 72pt \marginparsep 7pt
+ \topmargin 0pt   \headheight 12pt \headsep 36pt
+\footheight 12pt \footskip 12pt
+\footnotesep=14pt
+ 
+% architect margins are 1.5 at top and left and 1 at right and bottom
+\ifarchitect
+  \textheight 373pt \textwidth 614pt
+  \oddsidemargin 36pt \evensidemargin 0pt
+  \topmargin 36pt   \headheight 12pt \headsep 36pt
+  \typeout{[architect style]}
+  \fi
+ 
+%  footnotes if no option specified
+%
+\ifchapternotes\else\ifendnotes\else\ds@footnotes\fi\fi
+ 
+ 
+%  bottom-of-page footnotes format
+%  full width line and hanging indent
+%
+\def\footnoterule{\kern-3\p@
+ \hrule width \columnwidth \kern 2.6\p@}
+\long\def\@makefntext#1{\parindent 1em\noindent \hang
+ \hbox to1em{\hss$^{\@thefnmark}\,$}#1}
+ 
+ 
+ 
+%
+%  ----  Text pages  ----------------------------------
+%
+%  In two-sided style Chapter 1 is right handed
+%
+\def\textofChapter#1{\gdef\@textofChapter{#1}}  \textofChapter{Chapter}
+\def\textofAppendix#1{\gdef\@textofAppendix{#1}}  \textofAppendix{Appendix}
+
+\def\textpages{  % sets page numbering for text
+   \clearpage\pagestyle{empty}
+   \cleardoublepage\pagestyle{myheadings}\markboth{}{}
+   \def\@chapapp{\protect\@textofChapter}
+   \def\Thechapter{\Roman{chapter}}
+   \pagenumbering{arabic}
+   \textheight 602pt  % allow for no footers (vers 1.3)
+     \footheight 0pt \footskip 0pt
+   \ifarchitect \textwidth 614pt \oddsidemargin 36pt \twocolumn\fi}
+ 
+ 
+\def\appendix{\par
+ \setcounter{chapter}{0}
+ \setcounter{section}{0}
+ \def\@chapapp{\protect\@textofAppendix}
+ \def\Thechapter{\Alph{chapter}}
+ \def\thechapter{\Alph{chapter}}}
+ 
+ 
+%  Chapters
+%
+\def\@makechapterhead#1{ \vspace*{2pc} {\centering
+ \ifnum \c@secnumdepth >\m@ne \large \@chapapp{} \Thechapter \par
+ \vspace{10pt} \fi \large\bf \uppercase\expandafter{#1}\par
+ \nobreak \vspace{20pt}} }
+%
+\def\@makeschapterhead#1{ \vspace*{2pc} {\centering
+ \large\bf \uppercase\expandafter{#1}\par
+ \nobreak \vspace{20pt}} }
+%
+\def\chapter{\clearpage      % May start on right or left
+   \thispagestyle{empty}     % Page style of chapter page is 'empty'
+   \global\@topnum\z@        % Prevents figures from going at top of page.
+   \@afterindenttrue         % Allows indent in first paragraph.  Change
+   \ifchapternotes\@startnotes\fi  % if chapter notes
+   \let\\\relax                  % vers 1.3
+   \secdef\@chapter\@schapter}   % to \@afterindentflase to omit indent.
+%
+%  Complication is added here to allow line breaks
+%  in the chapter titles (via \\).
+%
+\def\@chapter[#1]#2{
+  \ifnum \c@secnumdepth >\m@ne
+  \refstepcounter{chapter}
+  \typeout{<<\thechapter>>}
+  {\def\\{ }  % allow \\ in title
+   \addcontentsline{toc}{chapter}{\protect
+     \numberline{\@chapapp\ \thechapter:}#1}}\else
+  {\def\\{ }  % allow \\ in title
+   \addcontentsline{toc}{chapter}{#1}}\fi
+ \addtocontents{lof}{\protect\addvspace{10pt}}
+ \addtocontents{lot}{\protect\addvspace{10pt}}
+ \if@twocolumn
+  \@topnewpage[\@makechapterhead{#2}]
+  \else \@makechapterhead{#2}
+  \@afterheading \fi}
+\def\@schapter#1{\if@twocolumn \@topnewpage[\@makeschapterhead{#1}]
+  \else \@makeschapterhead{#1}
+  \@afterheading\fi}
+%
+%  Sections
+%
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus
+  -.2ex}{2.3ex plus .2ex}{\normalsize \sl}}
+ \def\subsection{\@startsection{subsection}{2}{\z@}{-3.25ex plus -1ex minus
+  -.2ex}{1.5ex plus .2ex}{\normalsize \it}}
+ \def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-3.25ex plus
+  -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize \it}}
+%
+%  Provide for `Chapter ' in the toc
+%  \@tempdima is width of the Chapter/Appendix field
+%
+\def\l@chapter#1#2{\pagebreak[3]
+ \vskip 1.0em plus 1pt \@tempdima 85pt \begingroup
+ \parindent \z@ \rightskip \@pnumwidth
+ \parfillskip -\@pnumwidth
+ \bf \leavevmode \advance\leftskip\@tempdima \hskip -\leftskip #1\nobreak\hfil
+\nobreak\hbox to\@pnumwidth{\hss #2}\par
+ \endgroup}
+%
+%
+%  specification of \newfileline will cause a line break in any
+%  table of contents file.  This allows long or complicated titles.
+%
+\let\newfileline\relax             % will give linebreaks in .aux
+\let\n@wfileline\relax             % will give linebreaks in .toc
+%
+\def\addcontentsline#1#2#3{\if@filesw \begingroup
+ \let\label\@gobble \let\index\@gobble
+ \def\newfileline{\n@wfileline^^J}% % gives linebreaks in .aux
+ \def\protect##1{\string\string\string##1\string\space
+    \space}\@temptokena{\thepage}%
+ \edef\@tempa{\write \@auxout{\string\@writefile{#1}{\protect
+     \contentsline{#2}{#3}{\the\@temptokena}}}}\@tempa
+   \if@nobreak \ifvmode\nobreak\fi\fi\endgroup\fi}
+ 
+\def\enddocument{\@checkend{document}%
+ \clearpage\pagestyle{empty}\cleardoublepage\begingroup
+ \if@filesw \immediate\closeout\@mainaux
+ \def\global\@namedef##1##2{}\def\newlabel{\@testdef r}%
+ \def\bibcite{\@testdef b}\@tempswafalse \makeatletter
+ \def\n@wfileline{^^J}\input \jobname.aux
+ \if@tempswa \@warning{Label(s) may have changed.  Rerun to get
+ cross-references right}\fi\fi\endgroup\deadcycles\z@\@@end}
+ 
+ 
+%  ----  Difficult floats ---------------------
+%
+%  ----  Doublepage floats  (twoside only) ----
+%
+%  Caption pages must face their figure---normally meaning they
+%  must appear on an even page.  LaTeX makes it very difficult
+%  to set this up automatically.  For now we note the request
+%  for an even page and report an error if it doesn't occur.
+%
+%  ----  Facing caption pages (oneside style) -
+%
+%  Facing caption pages (Style manual, p 15) must be formatted
+%  much like the even numbered pages of a `two-sided' book.
+%  i.e., the binding is on the right and the page number is
+%  on the left.
+%
+%  to mark facing page floats a control sequence whose name contains
+%  the float box name is def'd to F for facing stuff and P otherwise
+%  (a possible cs name is, for example, '\facing:\bx@A')
+%
+%  ---
+%
+%  A facing float is indicated by the positioning character [f],
+%  i.e., \begin{figure}[pf] ... \end{figure}
+%
+% these macros originally from latex.tex
+\def\@xfloat#1[#2]{\ifhmode \@bsphack\@floatpenalty -\@Mii\else
+   \@floatpenalty-\@Miii\fi\def\@captype{#1}\ifinner
+      \@parmoderr\@floatpenalty\z@
+    \else\@next\@currbox\@freelist{\@tempcnta\csname ftype@#1\endcsname
+       \multiply\@tempcnta\@xxxii\advance\@tempcnta\sixt@@n
+       \global\@namedef{facing:\expandafter\string\@currbox}{P}
+       \@tfor \@tempa :=#2\do
+                        {\if\@tempa h\advance\@tempcnta \@ne\fi
+                         \if\@tempa t\advance\@tempcnta \tw@\fi
+                         \if\@tempa b\advance\@tempcnta 4\relax\fi
+                         \if\@tempa p\advance\@tempcnta 8\relax\fi
+ \if\@tempa f\global\@namedef{facing:\expandafter\string\@currbox}{F}\fi
+         }\global\count\@currbox\@tempcnta}\@fltovf\fi
+    \global\setbox\@currbox\vbox\bgroup
+%    \boxmaxdepth\z@     % commented out 15 Dec 87
+    \hsize\columnwidth \@parboxrestore}
+ 
+% -- for twoside styles ---
+%
+\if@twoside
+  \def\@xtryfc #1{\@next\@tempa\@trylist{}{}\@currtype
+    \count #1\divide\@currtype\@xxxii \multiply\@currtype\@xxxii
+    \@bitor \@currtype \@failedlist \@testfp #1\ifdim
+      \ht #1>\@colht \global\@testtrue\fi
+    \ifodd\c@page
+      \expandafter\if\csname facing:\string#1\endcsname F%
+          \message{[*** bad facing float placement ***]}\fi\fi
+     \if@test \@cons\@failedlist #1\else \@ytryfc #1\fi}
+%
+% -- for oneside styles --
+%
+\else
+  \def\@wtryfc #1{\global\setbox\@outputbox\vbox{\unvbox\@outputbox
+      \vskip\@fpsep\box #1}
+     \expandafter\if\csname facing:\string#1\endcsname F\gdef\facingp@ge{}\fi}
+   
+  % when a facing page caption is boxed for output,
+  % the control sequence \facingp@ge is defined, else it is not.
+ 
+  \def\@outputpage{\begingroup\catcode`\ =10 \if@specialpage
+     \global\@specialpagefalse\@nameuse{ps@\@specialstyle}\fi
+     \@ifundefined{facingp@ge}%
+         {\let\@thehead\@oddhead % case for normal pages
+          \let\@thefoot\@oddfoot  \let\@themargin\oddsidemargin}%
+         {\let\@thehead\@evenhead  % case for facing pages
+          \let\@thefoot\@evenfoot \let\@themargin\evensidemargin}
+       \global\let\facingp@ge\relax  % same as undefined (vers 1.3)
+       \shipout
+       \vbox{\normalsize \baselineskip\z@ \lineskip\z@
+          \let\par\@@par %% 15 Sep 87
+          \vskip \topmargin \moveright\@themargin
+          \vbox{\setbox\@tempboxa
+                  \vbox to\headheight{\vfil \hbox to\textwidth
+                          {\let\label\@gobble \let\index\@gobble
+                            \@thehead}} %% 22 Feb 87
+                \dp\@tempboxa\z@
+                \box\@tempboxa
+                \vskip \headsep
+                \box\@outputbox
+                \baselineskip\footskip
+                \hbox to\textwidth{\let\label\@gobble
+                       \let\index\@gobble  %% 22 Feb 87
+                       \@thefoot}}}\global\@colht\textheight
+          \endgroup\stepcounter{page}\let\firstmark\botmark}
+   
+\fi  % end of float problems
+% ------------------------------------------
+%
+%
+% ------------ Page numbering --------------
+%
+% modify stepcounter to decrement if the argument is negative.
+% Negative pages are needed this because Texrox uses the page number
+% to order pages.
+%
+\def\stepcounter#1{%
+  \expandafter\ifnum\csname c@#1\endcsname<0
+     \global\expandafter\advance\csname c@#1\endcsname\m@ne
+  \else \global\expandafter\advance\csname c@#1\endcsname\@ne\fi
+     {\let\@elt\@stpelt \csname cl@#1\endcsname}}
+%
+\def\@roman#1{\ifnum#1<0\romannumeral -#1\else\romannumeral #1\fi}
+%
+%
+
+ 
+% ------ Special captions ---------------------
+%
+% \caption[]{text} produces normal caption and numbering
+% \caption(-){(continued)} produces `(continued)' caption and 
+%        same-as-last caption number
+% \caption(x)[]{text} produces lettered caption.  1.1a, 1.1b, ...
+%        If (x) is (a) or (A) then caption number is incremented,
+%        else it is same numbered.
+
+\def\thecaptionletter{}
+\newif\ifcaptiontotoc\captiontotoctrue
+
+\def\caption{\@ifnextchar({\@specialcaption}{\@normalcaption}}
+
+\def\@normalcaption{\refstepcounter\@captype \@dblarg{\@caption\@captype}}
+\def\@specialcaption(#1){%
+  \def\thecaptionletter{#1}%
+  \captiontotocfalse
+  \if#1-\def\thecaptionletter{}\fi
+  \if#1a\refstepcounter\@captype\captiontotoctrue\fi
+  \if#1A\refstepcounter\@captype\captiontotoctrue\fi
+  \@dblarg{\@caption\@captype}}
+
+\long\def\@caption#1[#2]#3{\par
+  \ifcaptiontotoc
+    \addcontentsline{\csname
+    ext@#1\endcsname}{#1}{\protect\numberline{\csname
+    the#1\endcsname}{\ignorespaces #2}}%
+  \fi
+  \begingroup
+    \@parboxrestore
+    \normalsize
+    \@makecaption{\csname fnum@#1\endcsname
+        \thecaptionletter}{\ignorespaces #3}\par
+  \endgroup}
+
+%
+%  ----  Preliminary pages  ---------------------------
+%
+\def\prelimpages{ % sets page numbering for the preliminary pages
+   \pagestyle{empty} % will be {plain} at start of toc
+   \pagenumbering{roman}
+   \setcounter{page}{-1}
+   \textheight 572pt  % add separation for page numbers (vers 1.3)
+      \footheight 12pt \footskip 30pt
+   \ifarchitect \textwidth 450pt \oddsidemargin 118pt\fi}
+%
+%         (these macros are used once and discarded)
+%
+%  Title page
+%
+%  options and defaults
+%
+\def\Title#1{\gdef\@Title{#1}}
+\def\Author#1{\gdef\@Author{#1}}
+\def\Year#1{\gdef\@Year{#1}}  \Year{\year}
+\def\Degree#1{\gdef\@Degree{#1}} \Degree{Doctor of Philosophy}
+%
+\def\School#1{\gdef\@School{#1}} \School{University of Washington}
+\def\Degreetext#1{\gdef\@Degreetext{#1}} 
+  \Degreetext{A dissertation submitted in partial fulfillment\\
+    of the requirements for the degree of}
+\newcount\@Signatures 
+\def\Signatures#1{\global\@Signatures=#1\relax}
+  \Signatures{3} % number of signature lines
+ 
+\def\textofby#1{\gdef\@textofby{#1}}  \textofby{by}
+\def\textofApproved#1{\gdef\@textofApproved{#1}}  \textofApproved{Approved by}
+\def\textofChair#1{\gdef\@textofChair{#1}}  
+       \textofChair{(Chairperson of Supervisory Committee)}
+\def\textofProgram#1{\gdef\@textofProgram{#1}}  
+       \textofProgram{Program Authorized}
+\def\textoftoOffer#1{\gdef\@textoftoOffer{#1}}  
+       \textoftoOffer{to Offer Degree}
+\def\textofDate#1{\gdef\@textofDate{#1}}  \textofDate{Date}
+
+\def\titlepage{                   % Prints the title page
+    \vspace{7pc}
+    \begin{center}
+      {\Large
+      \lineskip 3ex
+      \@Title\par}
+      \vskip0pt plus1fill\relax
+      \@textofby
+      \par\vskip0pt plus1fill\relax
+      \@Author
+      \par\vskip0pt plus2fill\relax
+      \@Degreetext
+      \par\vskip0pt plus2fill\relax
+      \@Degree
+      \par\vskip0pt plus2fill\relax
+      \@School
+      \par\vskip0pt plus1fill\relax
+      \@Year
+      \par\vskip0pt plus2fill\relax
+     \makebox[\textwidth]{\@textofApproved\hrulefill}
+      \par
+      {\@textofChair}
+      \par
+      \@whilenum \@Signatures>1 \do
+       {\vskip18pt
+        \makebox[\textwidth]{\phantom{Approved by}\hrulefill}
+        \advance\@Signatures by\m@ne}
+      \par\vskip2pc
+      \makebox[\textwidth]{\@textofProgram\hfill}
+      \makebox[\textwidth]{\@textoftoOffer\hrulefill}
+      \par\vskip2pc
+      \makebox[\textwidth]{\@textofDate\hrulefill}
+     \par
+    \end{center}
+     \vskip0pt plus2fill\relax
+  \let\titlepage\relax}
+ 
+%   Quote slip
+%
+\def\textofSignature#1{\gdef\@textofSignature{#1}}  \textofSignature{Signature}
+\long\def\quoteslip#1{
+   \cleardoublepage
+   \null
+   \vskip0pt plus1fill\relax
+   \noindent #1\par
+   \vskip3pc
+   \begin{flushright}
+      \makebox[3in]{\@textofSignature\hrulefill}
+      \par\vskip2pc
+      \makebox[3in]{\@textofDate\hrulefill}
+   \end{flushright}
+   \vskip0pt plus2fill\relax
+   \let\quoteslip\relax}
+%
+%   Abstract
+%
+%  normal parameters
+\def\textofAbstract#1{\gdef\@textofAbstract{#1}}  \textofAbstract{Abstract}
+\def\textofChairSC#1{\gdef\@textofChairSC{#1}}  
+       \textofChairSC{Chairperson of Supervisory Committee:}
+\def\Professor#1{\gdef\@Professor{#1}}
+\def\Department#1{\gdef\@Department{#1}}
+\long\def\abstract#1{
+   \cleardoublepage
+   \begin{center}
+      \@School
+      \par\vskip1pc
+      \@textofAbstract
+      \par\vskip1pc
+      {\large \@Title \par}
+      \par\vskip1pc
+      by \@Author
+      \par\vskip1pc
+      \@textofChairSC
+         \begin{tabular}[t]{cc}\@Professor\\\@Department\end{tabular}
+      \par\vskip1pc
+   \end{center}
+   #1
+   \vfill
+   \let\abstract\relax}
+%
+%
+%   Table of contents (right side page)
+%
+%
+\def\textofToC#1{\gdef\@textofToC{#1}}  \textofToC{Table of Contents}
+\def\tableofcontents{\cleardoublepage
+   \chapter*{\@textofToC\@mkboth{}{}}
+   \pagestyle{plain}
+   \thispagestyle{empty}
+   \if@twoside\setcounter{page}{-1}\else\setcounter{page}{-2}\fi
+   {\let\footnotemark\relax  % in case one is in the title
+   \@starttoc{toc}
+    }
+   }
+%
+%   List of figures
+%
+\def\textofLoF#1{\gdef\@textofLoF{#1}}  \textofLoF{List of Figures}
+\def\listoffigures{\chapter*{\@textofLoF\@mkboth{}{}}
+   \thispagestyle{plain}
+   \addcontentsline{toc}{chapter}{\protect\@textofLoF}
+   {\let\footnotemark\relax  % in case one is in the title
+   \@starttoc{lof}
+    }
+   }
+%
+%   List of tables
+%
+\def\textofLoT#1{\gdef\@textofLoT{#1}}  \textofLoT{List of Tables}
+\def\listoftables{\chapter*{\@textofLoT\@mkboth{}{}}
+   \thispagestyle{plain}
+   \addcontentsline{toc}{chapter}{\protect\@textofLoT}
+   {\let\footnotemark\relax  % in case one is in the title
+   \@starttoc{lot}
+    }
+   }
+%
+%  Bibliography
+%
+\def\textofBIB#1{\gdef\@textofBIB{#1}}  \textofBIB{Bibliography}
+\def\thebibliography#1{\chapter*{\@textofBIB\@mkboth{}{}}
+ \addcontentsline{toc}{chapter}{\protect\@textofBIB}
+ \list
+ {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
+ \advance\leftmargin\labelsep
+ \usecounter{enumi}}
+ \def\newblock{\hskip .11em plus .33em minus .07em}
+ \sloppy\clubpenalty4000\widowpenalty4000
+ \sfcode`\.=1000\relax}
+ 
+%
+%   Acknowledgments
+%
+\def\textofAck#1{\gdef\@textofAck{#1}}  \textofAck{Acknowledgments}
+\long\def\acknowledgments#1{\chapter*{\@textofAck\@mkboth{}{}}
+   \thispagestyle{plain}
+   #1\par
+   \vfill
+   \let\acknowledgments\relax}
+ 
+%
+%   Dedication
+%
+\def\textofDed#1{\gdef\@textofDed{#1}}  \textofDed{Dedication}
+\long\def\dedication#1{\chapter*{\@textofDed\@mkboth{}{}}
+   \thispagestyle{plain}
+   #1\par
+   \vfill
+   \let\dedication\relax}
+ 
+%
+%   Vita
+%
+\def\textofVita#1{\gdef\@textofVita{#1}}  \textofVita{Vita}
+\long\def\vita#1{\chapter*{\@textofVita\@mkboth{}{}}
+   #1\par
+   \vfill
+   \let\vita\relax}
+ 
+% End of the thesis style

@@ -1,0 +1,22 @@
+% ==========   Preliminary pages
+%
+\pagenumbering{roman}
+%\begin{singlespace}
+%\approvalpage
+%\end{singlespace}
+%\clearpage
+\mytitlepage
+\addcontentsline{toc}{prelim}{TITLE PAGE}
+\include{abstract}
+\include{acknow}
+\include{dedicate}
+\begin{singlespace}
+\tableofcontents
+\listoftables
+\addcontentsline{toc}{prelim}{LIST OF TABLES}
+\addtocontents{lof}{\protect\noindent Figure}
+\listoffigures
+\addcontentsline{toc}{prelim}{LIST OF FIGURES}
+\addtocontents{lot}{\protect\noindent Table}
+\end{singlespace}
+

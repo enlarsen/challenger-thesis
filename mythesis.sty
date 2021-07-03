@@ -1,0 +1,249 @@
+\def\@Title{Efficient Markets:  The Space\\
+Shuttle {\em Challenger} Story}
+
+\def\approvalpage{
+    \thispagestyle{empty}
+    %\vspace*{2in}
+    \noindent\hspace*{3.5in}July 31, 1992\par
+    \noindent\rule{0in}{1in}To the Graduate School:\par
+   \indent
+    {\rule{0in}{.5in}\raggedright This thesis entitled 
+    ``Efficient Markets:  The Space Shuttle {\em Challenger}
+    Story'' and written by Erik N.
+   Larsen is presented to the Graduate School of Clemson
+   University.  I recommend that it be accepted in partial
+   fulfillment of the requirments for the degree of Master
+   of Arts with a major in Economics.\par}
+     \rule{0in}{.5in}\hspace*{3in}\hrulefill\par
+     \hspace*{3in}\makebox[3in]{Thesis Advisor}\par
+     \noindent \rule{0in}{1.5in}We have reviewed this thesis\par
+     \noindent and recommend its acceptance:\par
+     \noindent\rule{0in}{.5in}\rule{3in}{.2mm}\par
+     \noindent\rule{0in}{.5in}\rule{3in}{.2mm}\par
+     \noindent\rule{0in}{1.25in}\hspace*{3in}Accepted for the
+Graduate School:\par
+   \noindent\rule{0in}{.5in}\hspace*{3in}\rule{3in}{.2mm}\par
+  \vfill}
+
+\def\mytitlepage{
+        \thispagestyle{empty}
+        \begin{center}
+                \vspace*{1in plus 1pt minus 1pt}
+                \uppercase{Efficient Markets:  The Space\\
+                Shuttle {\em Challenger} Story}\par
+                \smallskip
+                \rule{2in}{.2mm}\par
+                \smallskip
+                A Thesis\par
+                Presented to\par
+                the Graduate School of\par
+                Clemson University\par
+                \smallskip
+                \rule{2in}{.2mm}\par
+                \smallskip
+                In Partial Fullfillment\par
+                of the Requirements for the Degree\par
+                Master of Arts\par
+                Economics\par
+                \smallskip
+                \rule{2in}{.2mm}\par
+                \smallskip
+                by\par
+                Erik N. Larsen\par
+                July 1992\par
+                \bigskip
+        \end{center}
+}
+
+\renewcommand{\@makechapterhead}[1]{ { \parindent 0pt
+\raggedright
+ \vspace*{1ex plus 0pt minus 0pt}
+ \ifnum \c@secnumdepth >\m@ne \centering \uppercase{\@chapapp{} \thechapter} 
+ \par
+ %\vskip 0.1in 
+ \fi \centering \uppercase{#1}\par
+ \nobreak \vskip 0.2in } }
+ 
+\renewcommand{\@makeschapterhead}[1]{ { \parindent 0pt
+\raggedright
+ \vspace*{1ex plus 0pt minus 0pt}
+ \centering \uppercase{#1}\par
+ \nobreak 
+\vskip 0.2in
+ } }
+ 
+\renewcommand{\chapter}
+{\cleardoublepage \thispagestyle{empty} \global\@topnum\z@
+\@afterindenttrue \secdef\@chapter\@schapter}
+
+\renewcommand{\cl@chapter}{} % trash the reseting counters at chapters
+
+\renewcommand{\theequation}{\arabic{equation}}
+\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\thechapter}{\Roman{chapter}}
+\renewcommand{\thetable}{\Roman{table}}
+
+
+\def\section{
+\@startsection{section}{1}{\z@}{1em plus 0pt minus 0pt}
+{.1mm plus 0pt minus 0pt}{\normalsize\centering\em}}
+
+\def\subsection{
+\@startsection{subsection}{2}{\z@}{1em plus 0pt minus 0pt}
+{.1mm plus 0pt minus 0pt}{\normalsize\centering}}
+
+\def\subsubsection{
+\@startsection{subsubsection}{3}{\z@}{.1em plus 0pt minus 0pt}
+{.1mm plus 0pt minus 0pt}{\normalsize\em}}
+
+\def\paragraph{
+\@startsection{paragraph}{4}{\z@}{.1em plus 0pt minus 0pt}
+{.1mm plus 0pt minus 0pt}{\normalsize}}
+
+%\def\subparagraph{\@startsection % {subparagraph}{4}{\parindent}{3.25ex plus 1ex minus
+% .2ex}{-1em}{\normalsize\bf}}
+
+\@twosidefalse
+\def\@oddhead{\hbox{}\hfil \rm\thepage}% Right heading.
+\def\@chapapp{CHAPTER}
+
+\def\clemsonsectioning{
+    \newlength{\sectionheadwidth}
+    \setlength{\sectionheadwidth}{\textwidth}
+    \addtolength{\sectionheadwidth}{-8em}
+    \let\@internalsection\section
+    \let\@internalsubsection\subsection
+    \let\@internalsubsubsection\subsubsection
+    \let\@internalparagraph\paragraph
+    \let\@internalsubparagraph\subparagraph
+ % Level 1
+    \def\section{\@ifnextchar *{\a@sections}{\a@section}}
+    \def\a@sections##1##2{%
+    \@internalsection*{%
+        \centering\parbox{%
+            \sectionheadwidth}{%
+                \centering\normalsize\underbar{##2}}}}
+    \def\a@section##1{%
+    \addcontentsline{toc}{section}{##1}
+    \@internalsection*{%
+        \centering\parbox{%
+            \sectionheadwidth}{%
+                \centering\normalsize\underbar{##1}}}}
+ % Level 2
+    \def\subsection{\@ifnextchar *{\a@subsections}{\a@subsection}}
+    \def\a@subsections##1##2{%
+    \@internalsubsection*{%
+        \centering\parbox{\sectionheadwidth}{\centering\normalsize##2}}}
+    \def\a@subsection##1{%
+    \addcontentsline{toc}{subsection}{##1}
+    \@internalsubsection*{%
+        \centering\parbox{\sectionheadwidth}{\centering\normalsize##1}}}
+ % Level 3
+    \def\subsubsection{\@ifnextchar *{\a@subsubsections}{\a@subsubsection}}
+    \def\a@subsubsections##1##2{%
+    \@internalsubsubsection*{%
+            {\flushleft\normalsize\underbar{##2}}}}
+    \def\a@subsubsection##1{%
+    \addcontentsline{toc}{subsubsection}{##1}
+    \@internalsubsubsection*{
+            {\flushleft\normalsize\underbar{##1}}}}
+ % Level 4
+    \def\paragraph##1{%
+        \@internalsubsubsection*{\flushleft\normalsize{##1}}}
+ % Level 5
+    \def\subparagraph##1{%
+        \@internalsubparagraph*{\noindent\normalsize{##1}.}}
+}
+\def\appendixname{APPENDIX}
+
+\def\@chapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
+ \refstepcounter{chapter}
+ \typeout{\@chapapp\space\thechapter.}
+ \addcontentsline{toc}{chapter}{\protect
+ \makebox[15pt][r]{\thechapter .}
+ \protect\hspace{.25in}\protect\uppercase{#1}}\else
+ \addcontentsline{toc}{chapter}{#1}\fi
+ \chaptermark{#1}
+\if@twocolumn
+\@topnewpage[\@makechapterhead{#2}]
+ \else \@makechapterhead{#2}
+ \@afterheading \fi}
+\def\@schapter#1{\if@twocolumn \@topnewpage[\@makeschapterhead{#1}]
+ \else \@makeschapterhead{#1}
+ \@afterheading\fi}
+
+% \def\l@beforechapter{\bf CHAPTER}
+\def\l@prelim#1#2{\@dottedtocline{-1}{0pt}{2.3em}{#1}{#2}
+ \vskip 1.5ex plus 0pt}
+\def\l@chapter#1#2{\pagebreak[3]
+\vskip 1.5ex plus 1pt
+\@dottedtocline{0}{1.0em}{2.3em}{#1}{#2}
+ \vskip 1.5ex plus 0pt}
+
+\def\l@section{\@dottedtocline{1}{1in}{2.3em}}
+\def\l@subsection{\@dottedtocline{2}{1.25in}{3.2em}}
+\def\l@subsubsection{\@dottedtocline{3}{1.50in}{4.1em}}
+\def\l@paragraph{\@dottedtocline{4}{1.75in}{5em}}
+\def\l@subparagraph{\@dottedtocline{5}{2in}{6em}}
+%\def\l@figure#1#2{\vskip 1.0em plus 1pt
+%\@dottedtocline{0}{0em}{2.3em}{#1}{#2}}
+%\def\l@table#1#2{\vskip 1.0em plus 1pt
+%\@dottedtocline{0}{0em}{2.3em}{#1}{#2}}
+\def\l@figure#1#2{\vskip 1.0em plus 1pt
+\@dottedtocline{0}{0em}{1.5in}{#1}{#2}}
+\def\l@table#1#2{\vskip 1.0em plus 1pt
+\@dottedtocline{0}{0em}{1.5in}{#1}{#2}}
+
+\def\contentsname{TABLE OF CONTENTS}
+\def\bibname{REFERENCES CITED}
+\def\listfigurename{LIST OF FIGURES}
+\def\listtablename{LIST OF TABLES}
+
+
+\def\thebibliography#1{%
+     \chapter*{\bibname\@mkboth{\bibname}{\bibname}}
+     \addcontentsline{toc}{prelim}{REFERENCES CITED}
+     \list
+     {\relax}{\setlength{\labelsep}{0em}
+     \setlength{\itemindent}{-\bibhang}
+     \setlength{\leftmargin}{\bibhang}}
+     \def\newblock{\hskip .11em plus .33em minus .07em}
+     \sloppy\clubpenalty4000\widowpenalty4000
+     \sfcode`\.=1000\relax}
+\let\endthebibliography=\endlist
+
+\long\def\@caption#1[#2]#3{\par\addcontentsline{\csname
+  ext@#1\endcsname}{#1}{\protect\makebox[30pt][r]{\csname
+  the#1\endcsname.}\protect\hspace{.25in} \ignorespaces #2}\begingroup
+    \@parboxrestore
+    \normalsize
+    \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par
+  \endgroup}
+
+\long\def\@makecaption#1#2{
+   \vskip 10pt plus 0pt minus 0pt
+      #1. #2\par\vskip 10pt plus 0pt minus 0pt
+}
+
+\long\def\@makefntext#1{\normalsize\parindent 1em\noindent 
+            \hbox to 1.8em{\hss$^{\@thefnmark}$}#1}
+
+\footnotesep 2em
+
+\def\quotation{\list{}{\partopsep 0pt plus 0pt minus 0pt
+\topsep 0em plus 0pt minus 0pt
+ \itemindent\listparindent
+ \rightmargin\leftmargin\parsep 0pt plus 1pt}\item[]}
+ 
+\interfootnotelinepenalty=10000
+
+%\def\tableofcontents{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+%  \fi\chapter*{Contents\@mkboth{Table of Contents (Continued)}{}}
+%  \@starttoc{toc}\if@restonecol\twocolumn\fi}
+
+\def\raggedright{\let\\=\@centercr\@rightskip\@flushglue \rightskip\@rightskip
+  \leftskip\z@
+%  \parindent\z@
+}
+
+\setcounter{tocdepth}{4}

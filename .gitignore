@@ -1,0 +1,15 @@
+*.aux
+*.log
+*.lof
+*.lot
+*.toc
+*.ps
+*.pdf
+*.dvi
+
+*.dlg
+
+*.blg
+*.bbl
+
+*.lab

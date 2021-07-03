@@ -1,0 +1,219 @@
+\appendix
+\chapter{Performing Event Studies}
+
+This appendix provides two programs for performing event
+studies used in this thesis.  The first, called es
+
+\begin{singlespace}
+\begin{scriptsize}
+\begin{verbatim}
+*! version 1.0 06/18/92
+program define es
+        version 3.0
+        local options "BS(int 0) Caldt(real 0) Start(int 0) End(int 0) BE(int 0) AE(int 0)"
+        parse "`*'"
+        
+        capture drop event ashift bshift
+        local i=_N
+        local found=0
+        local jl=0
+        local ju=_N+1
+        local ascnd=caldt[_N] > caldt[1]
+        while (`ju'-`jl' > 1) {
+                local jm=int((`ju'+`jl')/2)
+                if((`caldt'>=caldt[`jm']) == `ascnd') {
+                        local jl=`jm'
+                }
+                else {
+                        local ju=`jm'
+                }
+        }
+        local edate = `jl'
+        di "Event date " caldt[`edate']
+        local bevent=`edate'-`be'
+        local aevent=`edate'+`ae'
+        local edelta=`be'+`ae'+1
+        di "Event study on " "$S_FN"
+        di "Event window from " caldt[`bevent'] " To " caldt[`aevent']
+        di "   (" `edelta' " trading days)"
+        if (`bs' == 1) {
+                di "   (testing for beta shift)"
+        }
+        if `caldt' == caldt[`edate'] {
+                local lower=`edate'-`start'
+                local upper=`edate'+`end'
+                if(`bs'==1) {
+                        quietly {
+                                generate bshift=cond(_n>`edate' & _n<=`upper',ewretd,0) in `lower'/`upper'
+                                generate ashift=cond(_n>`edate' & _n<=`upper',1,0) in `lower'/`upper'
+                        }
+                }
+                generate event=cond(_n>=`bevent' & _n<=`aevent',1,0)
+                di "Event study regression from " caldt[`lower'] " to " caldt[`upper']
+                if(`bs' == 1) {
+                        regress ret event ewretd ashift bshift in `lower'/`upper'
+                }
+                else {
+                        regress ret event ewretd in `lower'/`upper'
+                }
+                drop event
+                if (`bs' == 1) {
+                        drop bshift ashift
+                }
+        }
+        else {
+                di "Could not find " `caldt' " in the data"
+        }
+     
+        end
+\end{verbatim}
+\end{scriptsize}
+\end{singlespace}
+
+\begin{singlespace}
+\begin{scriptsize}
+\begin{verbatim}
+//CRSP1 JOB (,,,5),TIME=(1,04)
+/*JOBPARM T=1,Q=H
+//S1 EXEC SAS606
+//R DD DSN=ACS.CRSP.DAILY.RETURNS,DISP=SHR,UNIT=TAPE
+//I DD DSN=ACS.CRSP.DAILY.INDEX.SAS,DISP=SHR
+//X DD DSN=ELARSEN.MISC.SOURCE(LIST),DISP=SHR
+//Y DD DSN=ACS.CRSP.HEADER.SAS,DISP=OLD
+//SYSIN  DD *
+  options nonotes;
+
+DATA ELIST;
+  INFILE X;
+  INPUT edate EPERM ELABEL $ 14-78;
+  IF EDATE > 620000;
+
+DATA _NULL_;
+   SET ELIST END=LAST;
+   CALL SYMPUT('MPERM']]LEFT(_N_), TRIM(EPERM));
+   CALL SYMPUT('MLABEL']]LEFT(_N_), TRIM(ELABEL));
+   CALL SYMPUT('MDATE']]LEFT(_N_), TRIM(EDATE));
+   call symput('ldate']]left(_n_),
+      put(input(put(edate,z6.),yymmdd6.),weekdate.));
+   IF LAST=1 THEN CALL SYMPUT('NEVENTS',_N_);
+
+%MACRO EXPPERMS(NUMBER, VAR);
+%LOCAL I;
+  &VAR in (
+%DO I=1 %TO &NUMBER;
+   &&MPERM&I
+   %END;
+   )
+%MEND EXPPERMS;
+
+%MACRO GETCNAME;
+%LOCAL I;
+%DO I=1 %TO &NEVENTS;
+   IF PERM=&&MPERM&I THEN CALL SYMPUT('CNAME']]LEFT(&I), TRIM(NAME));
+   %END;
+%MEND GETCNAME;
+
+
+Data tmpcname;
+   set y.header;
+   if %expperms(&nevents, perm);
+
+proc sort data=tmpcname; by perm decending namedt;
+proc sort data=tmpcname nodupkey; by perm;
+DATA _NULL_;
+   SET tmpcname;
+     %GETCNAME;
+
+DATA RET(KEEP=PERM RET T MISSING);
+
+INFILE R MISSOVER;
+RETAIN BEGRET ENDRET
+
+INPUT @9 PERM IB4. @13 SEGMENT IB4. @ ;
+
+  IF %EXPPERMS(&NEVENTS, PERM) THEN DO;
+IF SEGMENT=1 THEN
+  input @97 begret ib4. @101 endret ib4.;
+
+IF SEGMENT = 11 THEN DO;
+ FIRST=BEGRET+1;
+ LAST=ENDRET-BEGRET+1;
+ MISSING=1;
+ DO IRET=FIRST TO LAST;
+   IF IRET<=0 THEN IRET=1;
+   AT=13+IRET*4;T=IRET+BEGRET-1;
+   INPUT @AT RET RB4. @;
+   IF RET <-9 THEN RET=.;
+   IF RET=. THEN MISSING=MISSING+1;
+   IF RET ^=. THEN MISSING=1;
+   OUTPUT RET;
+   END; END;
+END;
+
+DATA I; SET I.DATA; T=_N_; KEEP T CALDT EWRETD;
+
+PROC SORT DATA=RET; BY T;
+DATA RET; MERGE RET I; BY T; IF RET^=.; DROP T;
+PROC SORT DATA=RET; BY PERM CALDT;
+
+
+%MACRO REGRESS;
+%DO I=1 %TO &NEVENTS;
+  DATA _NULL_;
+    SET RET;
+    IF CALDT=&&MDATE&I AND PERM=&&MPERM&I THEN
+      CALL SYMPUT('CDATE']]LEFT(&I),_N_);
+
+  %DO J=75 %TO 125 %BY 25;
+    %DO K=1 %TO 10;
+       %LET UPPER=%EVAL(&K/2);
+       %LET LOWER=%EVAL((&K-1)/2);
+
+      DATA REGS;
+        SET RET;
+        IF PERM=&&MPERM&I;
+        IF %EVAL(&&CDATE&I-&J)<=_N_<=%EVAL(&&CDATE&I+&J-1);
+        IF(&&CDATE&I-&LOWER)<=_N_<=(&&CDATE&I+&UPPER) THEN
+           EVENT = 1; ELSE EVENT = 0;
+
+ PROC REG NOPRINT OUTEST=TMPEST COVOUT;
+  MODEL RET=EVENT EWRETD;
+
+ DATA _NULL_;
+  SET TMPEST;
+  IF _TYPE_='PARMS' THEN
+    CALL SYMPUT('EVENTEST', EVENT);
+  IF _TYPE_='COV' AND _NAME_='EVENT' THEN
+    CALL SYMPUT('STE', SQRT(EVENT));
+
+DATA TMPRESLT;
+   WINDOW=&K;
+   TRADE=2*&J;
+   ESTIM=&EVENTEST;
+  T=&EVENTEST/&STE;
+   P=(1-PROBT(ABS(T),(&J*2)-3))*2;
+
+   IF P <= 0.01 THEN SIG="***";
+   ELSE IF P <= 0.05 THEN SIG="**";
+   ELSE IF P <= 0.1 THEN SIG="*";
+
+PROC APPEND BASE=RESULTS DATA=TMPRESLT; RUN;
+
+%END;
+  %END;
+
+PROC PRINT DATA=RESULTS;
+  TITLE1 "EVENT STUDY FOR &&CNAME&I Perm: &&MPERM&I";
+  TITLE2  "EVENT: &&MLABEL&I";
+  TITLE3 "EVENT DATE: &&ldate&I";
+  FOOTNOTE1 "* P<=.10  ** P<=.05  *** P<=.01";
+
+  PROC DATASETS LIBRARY=WORK;
+     DELETE RESULTS;
+ %END;
+ %MEND REGRESS;
+
+%REGRESS;
+\end{verbatim}
+\end{scriptsize}
+\end{singlespace}

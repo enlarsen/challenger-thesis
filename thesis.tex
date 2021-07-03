@@ -1,0 +1,72 @@
+%\documentstyle[sober,11pt,courier,mythesis,theapa,doublespace]{thesis}
+\documentstyle[12pt,theapa,doublespace,mythesis]{book}
+
+\hyphenation{space
+Space
+tests
+Management
+management
+McAuliffe
+Dobrzynski
+}
+
+\brokenpenalty=10000 % prevent page breaks at hyphenated words.
+%\raggedbottom
+\widowpenalty 10000
+\clubpenalty 10000
+\raggedright
+\marginparwidth 0pt 
+\oddsidemargin 0.5in
+\evensidemargin 0.5in
+\marginparsep 0pt
+\topmargin -0.375in 
+\textwidth 6.0in 
+\textheight 9 in
+
+\citepunct{(}{and}{, }{. }{, }{)}{``}{,''}
+\clemsonsectioning
+\notitlecasechange
+%\setstretch{1.9}
+
+%\setcounter{tocdepth}{2}  % chapter, sections, and subsections to toc
+
+%%Print DRAFT across each page
+%\special{!userdict begin /bop-hook{gsave 200 30 translate 65
+%rotate /Times-Roman findfont 216 scalefont setfont 0 0
+%moveto 0.1 setgray (DRAFT) show grestore} def end}
+
+\begin{document}
+
+%\sloppy
+
+%\tt
+\pagenumbering{roman}
+%\begin{singlespace}
+%\approvalpage
+%\end{singlespace}
+%\clearpage
+\mytitlepage
+\addcontentsline{toc}{prelim}{TITLE PAGE}
+\include{abstract}
+\include{acknow}
+\include{dedicate}
+\begin{singlespace}
+\tableofcontents
+\listoftables
+\addcontentsline{toc}{prelim}{LIST OF TABLES}
+\addtocontents{lof}{\protect\noindent Figure}
+\listoffigures
+\addcontentsline{toc}{prelim}{LIST OF FIGURES}
+\addtocontents{lot}{\protect\noindent Table}
+\end{singlespace}
+\include{intro}
+\include{litrev}
+\include{history}
+\include{empiric}
+\include{conclude}
+
+\bibliographystyle{theapa}
+\begin{singlespace}
+\bibliography{thesis}
+\end{singlespace}
+\end{document}
