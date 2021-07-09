@@ -50,10 +50,16 @@ Graduate School:\par
                 \smallskip
                 by\par
                 Erik N. Larsen\par
-                July 1992\par
+                August 1992\par
                 \bigskip
         \end{center}
 }
+
+% Redefine table environment so that all tables are set in sans-serif font
+% \let\tableorig\table
+% \def\table@i[#1]{\tableorig[#1]\sffamily}  % with optional argument
+% \def\table@ii{\tableorig\sffamily}  % without optional argument
+% \def\table{\@ifnextchar{\table@i \table@ii}}  % Redefine depending on presence of [
 
 \renewcommand{\@makechapterhead}[1]{ { \parindent 0pt
 \raggedright
@@ -80,8 +86,10 @@ Graduate School:\par
 
 \renewcommand{\theequation}{\arabic{equation}}
 \renewcommand{\thefigure}{\arabic{figure}}
-\renewcommand{\thechapter}{\Roman{chapter}}
-\renewcommand{\thetable}{\Roman{table}}
+% \renewcommand{\thechapter}{\Roman{chapter}}
+% \renewcommand{\thetable}{\Roman{table}}
+\renewcommand{\thechapter}{\arabic{chapter}}
+\renewcommand{\thetable}{\arabic{table}}
 
 
 \def\section{
@@ -205,8 +213,9 @@ Graduate School:\par
      \addcontentsline{toc}{prelim}{REFERENCES CITED}
      \list
      {\relax}{\setlength{\labelsep}{0em}
-     \setlength{\itemindent}{-\bibhang}
-     \setlength{\leftmargin}{\bibhang}}
+%     \setlength{\itemindent}{-2em}
+%     \setlength{\leftmargin}{2em}
+        }
      \def\newblock{\hskip .11em plus .33em minus .07em}
      \sloppy\clubpenalty4000\widowpenalty4000
      \sfcode`\.=1000\relax}

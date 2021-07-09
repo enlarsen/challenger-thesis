@@ -1,0 +1,8 @@
+rm thesis.lof
+rm thesis.toc
+rm *.aux
+rm thesis.bbl
+rm thesis.blg
+rm thesis.lot
+rm thesis.log
+

@@ -1,80 +1,79 @@
 \appendix
 \chapter{Performing Event Studies}
 
-This appendix provides two programs for performing event
-studies used in this thesis.  The first, called es
+This appendix provides two programs written by the author for performing the event studies used in this thesis.  The first performs event studies with Stata and the second, written for SAS, analyzes dates around a given date to fine statistically significant dates.
 
 \begin{singlespace}
-\begin{scriptsize}
-\begin{verbatim}
+%\begin{scriptsize}
+\begin{lstlisting}[language=stata,caption=Event studies with Stata]
 *! version 1.0 06/18/92
 program define es
-        version 3.0
-        local options "BS(int 0) Caldt(real 0) Start(int 0) End(int 0) BE(int 0) AE(int 0)"
-        parse "`*'"
-        
-        capture drop event ashift bshift
-        local i=_N
-        local found=0
-        local jl=0
-        local ju=_N+1
-        local ascnd=caldt[_N] > caldt[1]
-        while (`ju'-`jl' > 1) {
-                local jm=int((`ju'+`jl')/2)
-                if((`caldt'>=caldt[`jm']) == `ascnd') {
-                        local jl=`jm'
-                }
-                else {
-                        local ju=`jm'
-                }
-        }
-        local edate = `jl'
-        di "Event date " caldt[`edate']
-        local bevent=`edate'-`be'
-        local aevent=`edate'+`ae'
-        local edelta=`be'+`ae'+1
-        di "Event study on " "$S_FN"
-        di "Event window from " caldt[`bevent'] " To " caldt[`aevent']
-        di "   (" `edelta' " trading days)"
-        if (`bs' == 1) {
-                di "   (testing for beta shift)"
-        }
-        if `caldt' == caldt[`edate'] {
-                local lower=`edate'-`start'
-                local upper=`edate'+`end'
-                if(`bs'==1) {
-                        quietly {
-                                generate bshift=cond(_n>`edate' & _n<=`upper',ewretd,0) in `lower'/`upper'
-                                generate ashift=cond(_n>`edate' & _n<=`upper',1,0) in `lower'/`upper'
-                        }
-                }
-                generate event=cond(_n>=`bevent' & _n<=`aevent',1,0)
-                di "Event study regression from " caldt[`lower'] " to " caldt[`upper']
-                if(`bs' == 1) {
-                        regress ret event ewretd ashift bshift in `lower'/`upper'
-                }
-                else {
-                        regress ret event ewretd in `lower'/`upper'
-                }
-                drop event
-                if (`bs' == 1) {
-                        drop bshift ashift
-                }
-        }
-        else {
-                di "Could not find " `caldt' " in the data"
-        }
+  version 3.0
+  local options "BS(int 0) Caldt(real 0) Start(int 0) End(int 0) BE(int 0) AE(int 0)"
+  parse "`*'"
+  
+  capture drop event ashift bshift
+  local i=_N
+  local found=0
+  local jl=0
+  local ju=_N+1
+  local ascnd=caldt[_N] > caldt[1]
+  while (`ju'-`jl' > 1) {
+    local jm=int((`ju'+`jl')/2)
+    if((`caldt'>=caldt[`jm']) == `ascnd') {
+      local jl=`jm'
+    }
+    else {
+      local ju=`jm'
+    }
+  }
+  local edate = `jl'
+  di "Event date " caldt[`edate']
+  local bevent=`edate'-`be'
+  local aevent=`edate'+`ae'
+  local edelta=`be'+`ae'+1
+  di "Event study on " "$S_FN"
+  di "Event window from " caldt[`bevent'] " To " caldt[`aevent']
+  di "   (" `edelta' " trading days)"
+  if (`bs' == 1) {
+    di "   (testing for beta shift)"
+  }
+  if `caldt' == caldt[`edate'] {
+    local lower=`edate'-`start'
+    local upper=`edate'+`end'
+    if(`bs'==1) {
+      quietly {
+      generate bshift=cond(_n>`edate' & _n<=`upper',ewretd,0) in `lower'/`upper'
+      generate ashift=cond(_n>`edate' & _n<=`upper',1,0) in `lower'/`upper'
+      }
+    }
+    generate event=cond(_n>=`bevent' & _n<=`aevent',1,0)
+    di "Event study regression from " caldt[`lower'] " to " caldt[`upper']
+    if(`bs' == 1) {
+      regress ret event ewretd ashift bshift in `lower'/`upper'
+    }
+    else {
+      regress ret event ewretd in `lower'/`upper'
+    }
+    drop event
+    if (`bs' == 1) {
+      drop bshift ashift
+    }
+  }
+  else {
+    di "Could not find " `caldt' " in the data"
+  }
      
-        end
-\end{verbatim}
-\end{scriptsize}
+  end
+\end{lstlisting}
+%\end{scriptsize}
 \end{singlespace}
 
 \begin{singlespace}
-\begin{scriptsize}
-\begin{verbatim}
+%\begin{scriptsize}
+\begin{lstlisting}[language=sas,caption=Event studies with SAS]
 //CRSP1 JOB (,,,5),TIME=(1,04)
-/*JOBPARM T=1,Q=H
+//JOBPARM T=1,Q=H
 //S1 EXEC SAS606
 //R DD DSN=ACS.CRSP.DAILY.RETURNS,DISP=SHR,UNIT=TAPE
 //I DD DSN=ACS.CRSP.DAILY.INDEX.SAS,DISP=SHR
@@ -170,11 +169,11 @@ PROC SORT DATA=RET; BY PERM CALDT;
        %LET LOWER=%EVAL((&K-1)/2);
 
       DATA REGS;
-        SET RET;
-        IF PERM=&&MPERM&I;
-        IF %EVAL(&&CDATE&I-&J)<=_N_<=%EVAL(&&CDATE&I+&J-1);
-        IF(&&CDATE&I-&LOWER)<=_N_<=(&&CDATE&I+&UPPER) THEN
-           EVENT = 1; ELSE EVENT = 0;
+  SET RET;
+  IF PERM=&&MPERM&I;
+  IF %EVAL(&&CDATE&I-&J)<=_N_<=%EVAL(&&CDATE&I+&J-1);
+  IF(&&CDATE&I-&LOWER)<=_N_<=(&&CDATE&I+&UPPER) THEN
+     EVENT = 1; ELSE EVENT = 0;
 
  PROC REG NOPRINT OUTEST=TMPEST COVOUT;
   MODEL RET=EVENT EWRETD;
@@ -214,6 +213,6 @@ PROC PRINT DATA=RESULTS;
  %MEND REGRESS;
 
 %REGRESS;
-\end{verbatim}
-\end{scriptsize}
+\end{lstlisting}
+%\end{scriptsize}
 \end{singlespace}

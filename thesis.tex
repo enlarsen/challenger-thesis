@@ -1,5 +1,45 @@
-%\documentstyle[sober,11pt,courier,mythesis,theapa,doublespace]{thesis}
-\documentstyle[12pt,theapa,doublespace,mythesis]{book}
+\documentclass[12pt]{book}
+
+%\usepackage[american]{babel}
+\usepackage{aer}
+\usepackage{harvard}
+\usepackage{mythesis}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{graphicx}
+%\usepackage{float}
+
+%\usepackage{caption}
+%\captionsetup{font=rf}
+
+\usepackage[labelfont=bf,textfont=normalfont,singlelinecheck=off,justification=raggedright]{caption}
+
+\usepackage[adobe-utopia]{mathdesign}
+\usepackage{helvet}
+\usepackage[T1]{fontenc}
+
+% \usepackage{etoolbox}
+% \usepackage{anyfontsize}
+% \makeatletter
+% \patchcmd{\@footnotetext}{\fontsize{5}{5}}{\fontsize{5}{5}}{}{}
+% \makeatother
+
+
+\input{listings-stata.tex}
+\input{listings-sas.tex}
+
+
+
+\lstset{
+%  basicstyle        = \setmonofont{DejaVu Sans Mono}\footnotesize\ttfamily,
+  tabsize           = 2,      % Tab size
+  showstringspaces  = false,  % Don't underline spaces in strings
+  showspaces        = false,  % Don't underline spaces
+  breaklines        = true,   % automatic line breaking
+  breakatwhitespace = true,   % breaks only at white space.
+  lineskip          = 1.5pt,  % Sparing between lines of code
+  commentstyle      = \color{black!50}\itshape \let\textcolor\textcolordummy,
+}
 
 \hyphenation{space
 Space
@@ -9,9 +49,10 @@ management
 McAuliffe
 Dobrzynski
 }
+\doublespace
 
 \brokenpenalty=10000 % prevent page breaks at hyphenated words.
-%\raggedbottom
+\raggedbottom
 \widowpenalty 10000
 \clubpenalty 10000
 \raggedright
@@ -23,9 +64,9 @@ Dobrzynski
 \textwidth 6.0in 
 \textheight 9 in
 
-\citepunct{(}{and}{, }{. }{, }{)}{``}{,''}
+%\citepunct{(}{and}{, }{. }{, }{)}{``}{,''}
 \clemsonsectioning
-\notitlecasechange
+%\notitlecasechange
 %\setstretch{1.9}
 
 %\setcounter{tocdepth}{2}  % chapter, sections, and subsections to toc
@@ -44,8 +85,8 @@ Dobrzynski
 %\begin{singlespace}
 %\approvalpage
 %\end{singlespace}
-%\clearpage
-\mytitlepage
+\clearpage
+\include{titlepage}
 \addcontentsline{toc}{prelim}{TITLE PAGE}
 \include{abstract}
 \include{acknow}
@@ -64,8 +105,9 @@ Dobrzynski
 \include{history}
 \include{empiric}
 \include{conclude}
+\include{appa.tex}
 
-\bibliographystyle{theapa}
+\bibliographystyle{aer}
 \begin{singlespace}
 \bibliography{thesis}
 \end{singlespace}
