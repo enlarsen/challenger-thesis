@@ -3,7 +3,7 @@
 \appendix
 \chapter{Performing Event Studies}
 
-This appendix provides two programs written by the author for performing the event studies used in this thesis.  The first performs event studies with Stata and the second, written for SAS, analyzes dates around a given date to fine statistically significant dates.
+This appendix provides two programs written by the author for performing the event studies used in this thesis.  The first program performs event studies with Stata and the second, written for SAS, analyzes dates around a given date to find statistically significant event dates.
 
 \begin{singlespace}
 %\begin{scriptsize}
@@ -74,14 +74,6 @@ program define es
 \begin{singlespace}
 %\begin{scriptsize}
 \begin{lstlisting}[language=sas,caption=Event studies with SAS]
-//CRSP1 JOB (,,,5),TIME=(1,04)
-//JOBPARM T=1,Q=H
-//S1 EXEC SAS606
-//R DD DSN=ACS.CRSP.DAILY.RETURNS,DISP=SHR,UNIT=TAPE
-//I DD DSN=ACS.CRSP.DAILY.INDEX.SAS,DISP=SHR
-//X DD DSN=ELARSEN.MISC.SOURCE(LIST),DISP=SHR
-//Y DD DSN=ACS.CRSP.HEADER.SAS,DISP=OLD
-//SYSIN  DD *
   options nonotes;
 
 DATA ELIST;
@@ -91,10 +83,10 @@ DATA ELIST;
 
 DATA _NULL_;
    SET ELIST END=LAST;
-   CALL SYMPUT('MPERM']]LEFT(_N_), TRIM(EPERM));
-   CALL SYMPUT('MLABEL']]LEFT(_N_), TRIM(ELABEL));
-   CALL SYMPUT('MDATE']]LEFT(_N_), TRIM(EDATE));
-   call symput('ldate']]left(_n_),
+   CALL SYMPUT('MPERM'||LEFT(_N_), TRIM(EPERM));
+   CALL SYMPUT('MLABEL'||LEFT(_N_), TRIM(ELABEL));
+   CALL SYMPUT('MDATE'||LEFT(_N_), TRIM(EDATE));
+   call symput('ldate'||left(_n_),
       put(input(put(edate,z6.),yymmdd6.),weekdate.));
    IF LAST=1 THEN CALL SYMPUT('NEVENTS',_N_);
 
@@ -110,7 +102,7 @@ DATA _NULL_;
 %MACRO GETCNAME;
 %LOCAL I;
 %DO I=1 %TO &NEVENTS;
-   IF PERM=&&MPERM&I THEN CALL SYMPUT('CNAME']]LEFT(&I), TRIM(NAME));
+   IF PERM=&&MPERM&I THEN CALL SYMPUT('CNAME'||LEFT(&I), TRIM(NAME));
    %END;
 %MEND GETCNAME;
 
@@ -163,7 +155,7 @@ PROC SORT DATA=RET; BY PERM CALDT;
   DATA _NULL_;
     SET RET;
     IF CALDT=&&MDATE&I AND PERM=&&MPERM&I THEN
-      CALL SYMPUT('CDATE']]LEFT(&I),_N_);
+      CALL SYMPUT('CDATE'||LEFT(&I),_N_);
 
   %DO J=75 %TO 125 %BY 25;
     %DO K=1 %TO 10;
