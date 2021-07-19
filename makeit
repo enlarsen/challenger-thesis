@@ -2,3 +2,5 @@ pdflatex thesis
 bibtex thesis
 pdflatex thesis
 pdflatex thesis
+
+mv thesis.pdf challenger-thesis.pdf
